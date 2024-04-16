@@ -9,10 +9,8 @@
 
 This Connector is to be used in developer training sessions only. It contains three applications:
 1. a service app that validates if the customer is allowed to place the order
-2. an event app that sends emails to the customers
-3. a cleanup job app that manages the new arrivals category, adding new products and removing the products older than 30 days
-
-![Sample Connector Diagram](docs/images/sample-connector.png "Sample Connector")
+2. an event app that sends emails to the customers - only order confirmation emails yet
+3. a job app that manages the new arrivals category, adding new products and removing the products older than 30 days
 
 ## Prerequisite
 
@@ -32,25 +30,29 @@ Deploy this demo Connector into any project to learn and experience how commerce
 
 This Connector contains three applications, each of a different type.
 
-### Customer blocked service app
+### Validate customer service app
 
-It allows you to validate the order by checking if the customer is allowed to place the order.
+It allows you to validate if the customer is allowed to place the order by checking a custom field on the customer.
 
 Configurations:
 
 1. API credentials to your project
+2. Custom type with a boolean field
 
 ### Order confirmation email event app
 
-This event type app is triggered by the notification that is generated whenever a product is published. It adds the product to the new category if the product is less than a month old.
+This event type app is triggered by the notification that is generated whenever an order is placed. It sends an order confirmation email. It's working with Sendgrid (Twilio) but can easily be updated to work with other providers.
 
 Configurations:
 
 1. API credentials
+2. The API key used to communicate with the email provider
+3. Sender's email address
+4. Id of order confirmation email template created in the email service provider
 
-### new-arrivals-category-job-app
+### Manage new-arrivals category job app
 
-This job runs every day and manages the products in the new arrivals category.
+This job runs every 10 minutes and manages the products in the new arrivals category.
 
 Configurations:
 
