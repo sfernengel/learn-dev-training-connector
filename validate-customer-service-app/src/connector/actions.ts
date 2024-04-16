@@ -3,7 +3,7 @@ import { Type } from '@commercetools/platform-sdk';
 import { createApiRoot } from '../client/create.client';
 
 
-const CART_UPDATE_EXTENSION_KEY = 'validate-customer-orderCreateExtension';
+const ORDER_CREATE_EXTENSION_KEY = 'validate-customer-orderCreateExtension';
 
   
 
@@ -81,7 +81,7 @@ export async function createOrderCreateExtension(
     .extensions()
     .get({
       queryArgs: {
-        where: `key = "${CART_UPDATE_EXTENSION_KEY}"`,
+        where: `key = "${ORDER_CREATE_EXTENSION_KEY}"`,
       },
     })
     .execute();
@@ -91,7 +91,7 @@ export async function createOrderCreateExtension(
 
     await apiRoot
       .extensions()
-      .withKey({ key: CART_UPDATE_EXTENSION_KEY })
+      .withKey({ key: ORDER_CREATE_EXTENSION_KEY })
       .delete({
         queryArgs: {
           version: extension.version,
@@ -104,15 +104,15 @@ export async function createOrderCreateExtension(
     .extensions()
     .post({
       body: {
-        key: CART_UPDATE_EXTENSION_KEY,
+        key: ORDER_CREATE_EXTENSION_KEY,
         destination: {
           type: 'HTTP',
           url: applicationUrl,
         },
         triggers: [
           {
-            resourceTypeId: 'cart',
-            actions: ['Update'],
+            resourceTypeId: 'order',
+            actions: ['Create'],
           },
         ],
       },
@@ -165,7 +165,7 @@ export async function deleteOrderCreateExtension(): Promise<void> {
     .extensions()
     .get({
       queryArgs: {
-        where: `key = "${CART_UPDATE_EXTENSION_KEY}"`,
+        where: `key = "${ORDER_CREATE_EXTENSION_KEY}"`,
       },
     })
     .execute();
@@ -175,7 +175,7 @@ export async function deleteOrderCreateExtension(): Promise<void> {
 
     await apiRoot
       .extensions()
-      .withKey({ key: CART_UPDATE_EXTENSION_KEY })
+      .withKey({ key: ORDER_CREATE_EXTENSION_KEY })
       .delete({
         queryArgs: {
           version: extension.version,

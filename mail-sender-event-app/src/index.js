@@ -24,7 +24,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Define routes
-app.use('/', MailSendingRoutes);
+app.use('/mailSenderEvent', MailSendingRoutes);
 
 // Global error handler
 app.use(errorMiddleware);

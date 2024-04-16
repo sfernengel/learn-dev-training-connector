@@ -22,6 +22,7 @@ export const post = async (request: Request, response: Response) => {
 
   // Identify the type of resource in order to redirect
   // to the correct controller
+  console.log(resource.typeId);
   switch (resource.typeId) {
     case 'order':
       try {
