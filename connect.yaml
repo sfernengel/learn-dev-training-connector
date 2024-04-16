@@ -1,0 +1,74 @@
+deployAs:
+  - name: validate-customer-service-app
+    applicationType: service
+    endpoint: /validateCustomerService
+    scripts:
+      postDeploy: npm install && npm run build && npm run connector:post-deploy
+      preUndeploy: npm install && npm run build && npm run connector:pre-undeploy
+    configuration:
+      standardConfiguration:
+        - key: CTP_REGION
+          description: commercetools Composable Commerce API region (default europe-west1.gcp)
+          required: false
+          default: "europe-west1.gcp"
+        - key: CUSTOM_TYPE_KEY
+          description: custom type for blocking customers from placing order (default customer-block-custom-type)
+          required: true
+          default: "customer-block-custom-type"
+      securedConfiguration:
+        - key: CTP_PROJECT_KEY
+          description: commercetools Composable Commerce project key
+          required: true
+        - key: CTP_CLIENT_ID
+          description: commercetools Composable Commerce client ID
+          required: true
+        - key: CTP_CLIENT_SECRET
+          description: commercetools Composable Commerce client secret
+          required: true
+  - name: manage-new-arrivals-job-app
+    applicationType: job
+    endpoint: /newArrivalsJob
+    properties:
+      schedule: "*/10 * * * *"
+    configuration:
+      standardConfiguration:
+        - key: NEW_CATEGORY_KEY
+          description: The key of the Category used for new arrivals
+          required: true
+        - key: CTP_REGION
+          description: commercetools Composable Commerce API region (default europe-west1.gcp)
+          required: false
+          default: europe-west1.gcp
+      securedConfiguration:
+        - key: CTP_PROJECT_KEY
+          description: commercetools Composable Commerce Project key
+          required: true
+        - key: CTP_CLIENT_ID
+          description: commercetools Composable Commerce API Client ID
+          required: true
+        - key: CTP_CLIENT_SECRET
+          description: commercetools Composable Commerce API Client secret
+          required: true
+  - name: mail-sender-event-app
+    applicationType: event
+    endpoint: /mailSenderEvent
+    scripts:
+      postDeploy: npm install && npm run connector:post-deploy
+      preUndeploy: npm install && npm run connector:pre-undeploy
+    configuration:
+      standardConfiguration:
+        - key: CTP_REGION
+          description: commercetools Composable Commerce API region
+      securedConfiguration:
+        - key: CTP_PROJECT_KEY
+          description: commercetools Composable Commerce project key
+        - key: CTP_CLIENT_ID
+          description: commercetools Composable Commerce client ID
+        - key: CTP_CLIENT_SECRET
+          description: commercetools Composable Commerce client secret
+        - key: EMAIL_PROVIDER_API_KEY
+          description: The API key used to communicate with email provider
+        - key: SENDER_EMAIL_ADDRESS
+          description: sender's email address displayed in the email
+        - key: ORDER_CONFIRMATION_TEMPLATE_ID
+          description: Identifier of order confirmation email template stored in email service provider
