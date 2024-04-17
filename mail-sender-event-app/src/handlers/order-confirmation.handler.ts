@@ -24,9 +24,6 @@ class OrderConfirmationHandler extends GenericHandler {
     
     sgMail.setApiKey(readConfiguration().sgMailApiKey);
 
-    logger.info(senderEmailAddress);
-    logger.info(templateId);
-
     const orderId = messageBody.resource.id;
     const order = await getOrderById(orderId);
     if (order) {
@@ -36,8 +33,6 @@ class OrderConfirmationHandler extends GenericHandler {
         customer = await getCustomerById(order.customerId);
         customerEmail = customer.email;
       }
-      logger.info(order.customerId);
-      logger.info(order.customerEmail);
       const orderLineItems: item[] = [];
 
       for (const lineItem of order.lineItems) {

@@ -2,7 +2,7 @@ import { assertError, assertString } from '../utils/assert.utils';
 import { createEmailDeliverySubscripition } from './actions';
 
 const CONNECT_GCP_TOPIC_NAME_KEY = 'CONNECT_GCP_TOPIC_NAME';
-const CONNECT_GCP_PROJECT_ID_KEY = 'CONNECT_GCP_PROJECT_KEY';
+const CONNECT_GCP_PROJECT_ID_KEY = 'CONNECT_GCP_PROJECT_ID';
 
 async function postDeploy(properties: Map<string, unknown>) {
   const topicName = properties.get(CONNECT_GCP_TOPIC_NAME_KEY);

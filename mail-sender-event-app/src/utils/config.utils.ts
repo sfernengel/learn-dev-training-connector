@@ -17,7 +17,7 @@ export const readConfiguration = () => {
     region: process.env.CTP_REGION as string,
     senderEmailAddress: process.env.SENDER_EMAIL_ADDRESS as string,
     templateId: process.env.ORDER_CONFIRMATION_TEMPLATE_ID as string,
-    sgMailApiKey: process.env.SENDGRID_API_KEY as string
+    sgMailApiKey: process.env.EMAIL_PROVIDER_API_KEY as string
   };
 
   const validationErrors = getValidateMessages(envValidators, envVars);

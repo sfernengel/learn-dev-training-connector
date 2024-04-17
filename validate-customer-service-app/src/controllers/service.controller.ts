@@ -22,7 +22,6 @@ export const post = async (request: Request, response: Response) => {
 
   // Identify the type of resource in order to redirect
   // to the correct controller
-  console.log(resource.typeId);
   switch (resource.typeId) {
     case 'order':
       try {
@@ -37,8 +36,10 @@ export const post = async (request: Request, response: Response) => {
           JSON.stringify(data?.actions[0].action)
         );
       } catch (error) {
-        console.log("here");
-        if (error instanceof Error) {
+        if (error instanceof CustomError) {
+          throw error;
+        }
+        else if (error instanceof Error) {
           throw new CustomError(500, error.message);
         }
       }
