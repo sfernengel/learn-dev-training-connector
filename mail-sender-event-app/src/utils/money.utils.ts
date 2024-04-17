@@ -1,4 +1,6 @@
-export function convertMoneyToText(money) {
+import { CentPrecisionMoney, TaxedPrice, TypedMoney } from "@commercetools/platform-sdk";
+
+export function convertMoneyToText(money: TypedMoney | CentPrecisionMoney) {
   if (
     money.type === 'centPrecision' &&
     money.centAmount &&

@@ -11,30 +11,31 @@ import {
   HTTP_STATUS_SUCCESS_ACCEPTED,
 } from '../constants/http-status.constants.js';
 import { readConfiguration } from '../utils/config.utils.js';
+import { Request } from 'express';
 
-export function isSelfCreatedChange(messageBody) {
+export function isSelfCreatedChange(messageBody: any) {
   const resourceModifiedBy = messageBody.createdBy?.clientId;
   const currentConnectorClientId = readConfiguration().clientId;
   return resourceModifiedBy === currentConnectorClientId;
 }
 
-export function isOrderSubscriptionMessage(messageBody) {
+export function isOrderSubscriptionMessage(messageBody: any) {
   return ORDER_SUBSCRIPTION_MESSAGE_TYPES.includes(messageBody.type);
 }
 
-export function isOrderConfirmationMessage(messageBody) {
+export function isOrderConfirmationMessage(messageBody: any) {
   return [
     ORDER_CREATION_SUBSCRIPTION_MESSAGE_TYPE
   ].includes(messageBody.type);
 }
 
-function isValidMessageType(messageBody) {
+function isValidMessageType(messageBody: any) {
   return (
     isOrderSubscriptionMessage(messageBody)
   );
 }
 
-export function doValidation(request) {
+export function doValidation(request: Request) {
   if (!request.body) {
     throw new CustomError(
       HTTP_STATUS_BAD_REQUEST,

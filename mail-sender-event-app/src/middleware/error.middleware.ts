@@ -1,3 +1,4 @@
+import { Request, Response } from 'express';
 import CustomError from '../errors/custom.error.js';
 
 /**
@@ -8,7 +9,7 @@ import CustomError from '../errors/custom.error.js';
  * @param next
  * @returns
  */
-export const errorMiddleware = (error, _req, res, _next) => {
+export const errorMiddleware = (error: Error, req: Request, res: Response, next: any) => {
   if (error instanceof CustomError) {
     if (typeof error.statusCode === 'number') {
       res.status(error.statusCode).json({

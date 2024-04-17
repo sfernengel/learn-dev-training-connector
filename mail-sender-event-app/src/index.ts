@@ -1,14 +1,15 @@
-import 'dotenv/config.js';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
-import express from 'express';
+import express, { Express } from 'express';
 import bodyParser from 'body-parser';
 
 // Import routes
-import MailSendingRoutes from './routes/mail-sending.route.js';
-import { logger } from './utils/logger.utils.js';
+import MailSendingRoutes from './routes/mail-sending.route';
+import { logger } from './utils/logger.utils';
 
-import {readConfiguration} from './utils/config.utils.js';
-import { errorMiddleware } from './middleware/error.middleware.js';
+import {readConfiguration} from './utils/config.utils';
+import { errorMiddleware } from './middleware/error.middleware';
 
 // Read env variables
 readConfiguration();
@@ -16,7 +17,7 @@ readConfiguration();
 const PORT = 8080;
 
 // Create the express app
-const app = express();
+const app: Express = express();
 app.disable('x-powered-by');
 
 // Define configurations

@@ -1,6 +1,6 @@
-import { createApiRoot } from './create.client.js';
+import { createApiRoot } from './create.client';
 
-export async function getCustomerById(customerId) {
+export async function getCustomerById(customerId: string) {
   return await createApiRoot()
     .customers()
     .withId({
@@ -11,7 +11,7 @@ export async function getCustomerById(customerId) {
     .then((response) => response.body);
 }
 
-export async function getOrderById(orderId) {
+export async function getOrderById(orderId: string) {
   return await createApiRoot()
     .orders()
     .withId({

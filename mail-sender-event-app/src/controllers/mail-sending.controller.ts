@@ -1,3 +1,4 @@
+import { Request, Response } from 'express';
 import { logger } from '../utils/logger.utils.js';
 import { HTTP_STATUS_SUCCESS_ACCEPTED } from '../constants/http-status.constants.js';
 import {
@@ -9,6 +10,7 @@ import HandlerFactory from '../factory/handler.factory.js';
 import {
   HANDLER_TYPE_ORDER_CONFIRMATION,
   } from '../constants/handler-type.constants.js';
+import CustomError from '../errors/custom.error.js';
 
 /**
  * Exposed event POST endpoint.
@@ -21,7 +23,7 @@ import {
  * @param {Response} response The express response
  * @returns
  */
-export const messageHandler = async (request, response) => {
+export const messageHandler = async (request: Request, response: Response) => {
   // Send ACCEPTED acknowledgement to Subscription
   response.status(HTTP_STATUS_SUCCESS_ACCEPTED).send();
 
@@ -32,16 +34,13 @@ export const messageHandler = async (request, response) => {
     const encodedMessageBody = request.body.message.data;
     const messageBody = decodeToJson(encodedMessageBody);
     const handlerFactory = new HandlerFactory();
-    let handler;
+    // let handler: any;
     if (isOrderConfirmationMessage(messageBody)) {
-      handler = handlerFactory.getHandler(HANDLER_TYPE_ORDER_CONFIRMATION);
+      let handler: any = handlerFactory.getHandler(HANDLER_TYPE_ORDER_CONFIRMATION);
+      await handler.process(messageBody);
     } 
-    await handler.process(messageBody);
-  } catch (err) {
-    if (err.statusCode !== HTTP_STATUS_SUCCESS_ACCEPTED) {
-      logger.error(err);
-    } else {
-      logger.info(err);
-    }
+    
+  } catch (error) {
+    throw new CustomError(400, `Bad request: ${error}`);
   }
 };

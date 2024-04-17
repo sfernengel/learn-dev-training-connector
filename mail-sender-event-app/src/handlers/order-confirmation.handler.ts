@@ -4,9 +4,11 @@ import { getOrderById, getCustomerById } from '../client/query.client.js';
 import CustomError from '../errors/custom.error.js';
 import { HTTP_STATUS_BAD_REQUEST } from '../constants/http-status.constants.js';
 import { convertMoneyToText } from '../utils/money.utils.js';
-import { addImageSizeSuffix } from '../utils/image.utils.js';
-import { IMAGE_SIZE_SMALL } from '../constants/image.constants.js';
+import { readConfiguration } from '../utils/config.utils.js';
+
 import sgMail from '@sendgrid/mail'
+import { item } from '../types/index.types.js';
+
 
 const DEFAULT_LOCALE = 'en-US';
 const DEFAULT_CUSTOMER_NAME = 'Customer';
@@ -15,12 +17,12 @@ class OrderConfirmationHandler extends GenericHandler {
     super();
   }
 
-  async process(messageBody) {
+  async process(messageBody: any) {
     logger.info(JSON.stringify(messageBody));
-    const senderEmailAddress = process.env.SENDER_EMAIL_ADDRESS;
-    const templateId = process.env.ORDER_CONFIRMATION_TEMPLATE_ID;
-    const sgMailApiKey = process.env.SENDGRID_API_KEY;
-    sgMail.setApiKey(sgMailApiKey);
+    const senderEmailAddress = readConfiguration().senderEmailAddress;
+    const templateId = readConfiguration().templateId;
+    
+    sgMail.setApiKey(readConfiguration().sgMailApiKey);
 
     logger.info(senderEmailAddress);
     logger.info(templateId);
@@ -29,33 +31,27 @@ class OrderConfirmationHandler extends GenericHandler {
     const order = await getOrderById(orderId);
     if (order) {
       let customer;
+      let customerEmail = order.customerEmail;
       if (order.customerId) {
         customer = await getCustomerById(order.customerId);
+        customerEmail = customer.email;
       }
       logger.info(order.customerId);
       logger.info(order.customerEmail);
-      const orderLineItems = [];
+      const orderLineItems: item[] = [];
 
       for (const lineItem of order.lineItems) {
-        const item = {
+        const item: item = {
           productName: lineItem.name[DEFAULT_LOCALE],
           productQuantity: lineItem.quantity,
           productSku: lineItem.variant.sku,
-          productImage: lineItem.variant.images[0]
-            ? addImageSizeSuffix(
-                lineItem.variant.images[0].url,
-                IMAGE_SIZE_SMALL
-              )
-            : '',
           productSubTotal: convertMoneyToText(lineItem.totalPrice),
         };
         orderLineItems.push(item);
       }
       const orderDetails = {
         orderNumber: order.orderNumber ? order.orderNumber : '',
-        customerEmail: order.customerEmail
-          ? order.customerEmail
-          : customer.email,
+        customerEmail,
         customerFirstName: customer?.firstName
           ? customer.firstName
           : DEFAULT_CUSTOMER_NAME,
@@ -64,7 +60,7 @@ class OrderConfirmationHandler extends GenericHandler {
         orderCreationTime: order.createdAt,
         orderTotalPrice: convertMoneyToText(order.totalPrice),
         orderTaxedPrice: order.taxedPrice
-          ? convertMoneyToText(order.taxedPrice)
+          ? convertMoneyToText(order.taxedPrice.totalGross)
           : '',
         orderLineItems,
       };
@@ -90,7 +86,7 @@ class OrderConfirmationHandler extends GenericHandler {
     } else {
       throw new CustomError(
         HTTP_STATUS_BAD_REQUEST,
-        `Unable to get customer details with customer ID ${order.customerId}`
+        `Unable to get customer details`
       );
     }
   }

@@ -4,10 +4,10 @@ import { logger } from '../utils/logger.utils.js';
 
 class GenericHandler {
   async sendMail(
-    senderEmailAddress,
-    recipientEmailAddress,
-    templateId,
-    templateData
+    senderEmailAddress: string,
+    recipientEmailAddress: string,
+    templateId: string,
+    templateData: string
   ) {
     logger.info(`senderEmailAddress: ${senderEmailAddress}`);
     logger.info(`recipientEmailAddress: ${recipientEmailAddress}`);
@@ -16,11 +16,11 @@ class GenericHandler {
     // Implement the invocation to SDK supplied by email service provider
   }
 
-  process() {
+  process(message: string) {
     // Write the actual implementation in inherited handlers
     throw new CustomError(
       HTTP_STATUS_SERVER_ERROR,
-      `Missing actual implementation in message handler`
+      `Missing actual implementation in message handler for message ${message}`
     );
   }
 }

@@ -11,10 +11,13 @@ import { getValidateMessages } from '../validators/helpers.validators.js';
 
 export const readConfiguration = () => {
   const envVars = {
-    clientId: process.env.CTP_CLIENT_ID,
-    clientSecret: process.env.CTP_CLIENT_SECRET,
-    projectKey: process.env.CTP_PROJECT_KEY,
-    region: process.env.CTP_REGION,
+    clientId: process.env.CTP_CLIENT_ID as string,
+    clientSecret: process.env.CTP_CLIENT_SECRET as string,
+    projectKey: process.env.CTP_PROJECT_KEY as string,
+    region: process.env.CTP_REGION as string,
+    senderEmailAddress: process.env.SENDER_EMAIL_ADDRESS as string,
+    templateId: process.env.ORDER_CONFIRMATION_TEMPLATE_ID as string,
+    sgMailApiKey: process.env.SENDGRID_API_KEY as string
   };
 
   const validationErrors = getValidateMessages(envValidators, envVars);

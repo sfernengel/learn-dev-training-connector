@@ -1,12 +1,13 @@
 import { createApiBuilderFromCtpClient } from '@commercetools/platform-sdk';
 import { createClient } from './build.client.js';
 import {readConfiguration} from '../utils/config.utils.js';
+import { ByProjectKeyRequestBuilder } from '@commercetools/platform-sdk/dist/declarations/src/generated/client/by-project-key-request-builder.js';
 
 /**
  * Create client with apiRoot
  * apiRoot can now be used to build requests to de Composable Commerce API
  */
-export const createApiRoot = ((root) => () => {
+export const createApiRoot = ((root?: ByProjectKeyRequestBuilder) => () => {
   if (root) {
     return root;
   }

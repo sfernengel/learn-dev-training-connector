@@ -1,15 +1,23 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck
+
 import validator from 'validator';
+import { ValidatorCreator, Wrapper } from '../types/index.types';
 
 /**
  * File used to create helpers to validate the fields
  */
 
-const required =
+const required: Wrapper =
   (fn) =>
   (value, ...args) =>
     !(value === undefined || value === null) && fn(...[String(value), ...args]);
 
-export const standardString = (path, message, overrideConfig = {}) => [
+export const standardString: ValidatorCreator = (
+  path,
+  message,
+  overrideConfig = {}
+) => [
   path,
   [
     [
@@ -20,7 +28,7 @@ export const standardString = (path, message, overrideConfig = {}) => [
   ],
 ];
 
-export const standardEmail = (path, message) => [
+export const standardEmail: ValidatorCreator = (path, message) => [
   path,
   [[required(validator.isEmail), message]],
 ];
@@ -89,6 +97,20 @@ export const getValidateMessages = (validatorConfigs, item) =>
     }, []);
   });
 
+export const optional =
+  (fn) =>
+  (...args) => {
+    const [path, validators] = fn(...args);
+    return [
+      path,
+      validators.map(([fn, message, validatorArgs]) => [
+        (value, ...args) =>
+          value === undefined ? true : fn(...[value, ...args]),
+        message,
+        validatorArgs,
+      ]),
+    ];
+  };
 
 export const array =
   (fn) =>
@@ -106,7 +128,7 @@ export const array =
     ];
   };
 
-export const region = (path, message) => [
+export const region: ValidatorCreator = (path, message) => [
   path,
   [
     [
