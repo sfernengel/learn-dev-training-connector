@@ -37,7 +37,7 @@ It allows you to validate if the customer is allowed to place the order by check
 Configurations:
 
 1. API credentials to your project
-2. Custom type with a boolean field
+2. Custom type with a boolean field to block the user
 
 ### Order confirmation email event app
 
