@@ -1,8 +1,9 @@
 {
-  "name": "event-typescript",
+  "name": "mail-sender-event-app",
   "version": "1.0.0",
   "main": "index.js",
-  "license": "MIT",
+  "license": "Apache-2.0",
+  "author": "commercetools Training Team",
   "private": true,
   "scripts": {
     "start": "node build/index.js",

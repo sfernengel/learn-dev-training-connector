@@ -1,6 +1,5 @@
 {
-  "name": "job-typescript",
-  "description": "",
+  "name": "manage-new-arrivals-job-app",
   "version": "1.0.0",
   "main": "index.js",
   "private": true,
@@ -14,8 +13,8 @@
     "test": "jest --config jest.config.cjs",
     "test:watch": "jest --watch"
   },
-  "author": "",
-  "license": "MIT",
+  "author": "commercetools Training Team",
+  "license": "Apache-2.0",
   "dependencies": {
     "@commercetools-backend/loggers": "^21.19.0",
     "@commercetools/platform-sdk": "^4.1.0",
