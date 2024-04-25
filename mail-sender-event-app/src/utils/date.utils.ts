@@ -1,6 +1,4 @@
-export function getTimeDiffInMinute(startDateString: Date, endDateString: Date) {
-  let startDate = new Date(startDateString);
-  let endDate = new Date(endDateString);
+export function getTimeDiffInMinute(startDate: Date, endDate: Date) {
   startDate.setMilliseconds(0);
   endDate.setMilliseconds(0);
 

@@ -1,4 +1,4 @@
-import { CentPrecisionMoney, TaxedPrice, TypedMoney } from "@commercetools/platform-sdk";
+import { CentPrecisionMoney, TypedMoney } from "@commercetools/platform-sdk";
 
 export function convertMoneyToText(money: TypedMoney | CentPrecisionMoney) {
   if (
@@ -6,7 +6,7 @@ export function convertMoneyToText(money: TypedMoney | CentPrecisionMoney) {
     money.centAmount &&
     money.fractionDigits
   ) {
-    let amount = money.centAmount / Math.pow(10, money.fractionDigits);
+    const amount = money.centAmount / Math.pow(10, money.fractionDigits);
     return money.currencyCode + ' ' + amount;
   }
   return '';

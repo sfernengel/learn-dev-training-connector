@@ -18,7 +18,6 @@ class OrderConfirmationHandler extends GenericHandler {
   }
 
   async process(messageBody: any) {
-    logger.info(JSON.stringify(messageBody));
     const senderEmailAddress = readConfiguration().senderEmailAddress;
     const templateId = readConfiguration().templateId;
     

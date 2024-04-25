@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import { logger } from '../utils/logger.utils.js';
 import { HTTP_STATUS_SUCCESS_ACCEPTED } from '../constants/http-status.constants.js';
 import {
   doValidation,
@@ -11,6 +10,7 @@ import {
   HANDLER_TYPE_ORDER_CONFIRMATION,
   } from '../constants/handler-type.constants.js';
 import CustomError from '../errors/custom.error.js';
+import GenericHandler from '../handlers/generic.handler.js';
 
 /**
  * Exposed event POST endpoint.
@@ -36,7 +36,7 @@ export const messageHandler = async (request: Request, response: Response) => {
     const handlerFactory = new HandlerFactory();
     // let handler: any;
     if (isOrderConfirmationMessage(messageBody)) {
-      let handler: any = handlerFactory.getHandler(HANDLER_TYPE_ORDER_CONFIRMATION);
+      const handler: any = handlerFactory.getHandler(HANDLER_TYPE_ORDER_CONFIRMATION);
       await handler.process(messageBody);
     } 
     

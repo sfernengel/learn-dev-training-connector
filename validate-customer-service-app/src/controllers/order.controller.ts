@@ -20,16 +20,14 @@ export const create = async (resource: Resource) => {
   try {
 
     const order = JSON.parse(JSON.stringify(resource));
-    let customerId = order.obj.customerId
+    const customerId = order.obj.customerId
     if (customerId) {
-        var customer = await getCustomerById(customerId);
-        let canPlaceOrders: Boolean = false;
-        
-        console.log("Customer fetched", JSON.stringify(customer));
+        const customer = await getCustomerById(customerId);
+        let canPlaceOrders = false;
     
         const type = await getTypeByKey(customerBlockTypeKey);
         if (type.fieldDefinitions.find(fd => fd.type.name == "Boolean")){
-          const fieldName: String = type.fieldDefinitions.find(fd => fd.type.name == "Boolean")?.name ?? "";
+          const fieldName: string = type.fieldDefinitions.find(fd => fd.type.name == "Boolean")?.name ?? "";
           canPlaceOrders = customer?.custom?.fields?.[fieldName as keyof typeof customer.custom.fields];
         }
 
@@ -70,8 +68,7 @@ export const create = async (resource: Resource) => {
 export const orderController = async (action: string, resource: Resource) => {
   switch (action) {
     case 'Create': 
-      const data = create(resource);
-      return data;
+      return create(resource);
     case 'Update':{
       break;
     }

@@ -1,7 +1,4 @@
-import { ClientResponse, ProductPagedQueryResponse, ProductProjectionPagedQueryResponse } from '@commercetools/platform-sdk';
-
 import { createApiRoot } from '../client/create.client';
-import { logger } from '../utils/logger.utils';
 
 
 export const getProductsByQuery = async(filterQuery:string[]) =>{

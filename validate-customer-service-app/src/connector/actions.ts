@@ -63,7 +63,6 @@ export async function createType(): Promise<void> {
         },
       })
       .execute().then(type => type.body);
-      console.log("Custom Type Created:", type.id);
   }
   
   
