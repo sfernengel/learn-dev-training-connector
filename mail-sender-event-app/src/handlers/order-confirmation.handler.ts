@@ -25,12 +25,11 @@ class OrderConfirmationHandler extends GenericHandler {
 
     const orderId = messageBody.resource.id;
     const order = await getOrderById(orderId);
-    if (order) {
+    
       let customer;
       let customerEmail = order.customerEmail;
       if (order.customerId) {
         customer = await getCustomerById(order.customerId);
-        customerEmail = customer.email;
       }
       const orderLineItems: item[] = [];
 
@@ -72,17 +71,6 @@ class OrderConfirmationHandler extends GenericHandler {
       logger.info(
         `Confirmation email of customer registration has been sent to ${orderDetails.customerEmail}.`
       );
-    } else if (!order) {
-      throw new CustomError(
-        HTTP_STATUS_BAD_REQUEST,
-        `Unable to get order details with order ID ${orderId}`
-      );
-    } else {
-      throw new CustomError(
-        HTTP_STATUS_BAD_REQUEST,
-        `Unable to get customer details`
-      );
-    }
-  }
+  } 
 }
 export default OrderConfirmationHandler;
