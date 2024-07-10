@@ -58,7 +58,9 @@ deployAs:
     configuration:
       standardConfiguration:
         - key: CTP_REGION
-          description: commercetools Composable Commerce API region
+          description: commercetools Composable Commerce API region (default europe-west1.gcp)
+          required: false
+          default: europe-west1.gcp
       securedConfiguration:
         - key: CTP_PROJECT_KEY
           description: commercetools Composable Commerce project key

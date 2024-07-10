@@ -5,6 +5,7 @@ import { Resource } from '../interfaces/resource.interface';
 import { readConfiguration } from '../utils/config.utils';
 import { getCustomerById } from '../api/customers';
 import { getTypeByKey } from '../api/types';
+import { isHttpError } from '../types/index.types';
 
 /**
  * Handle the update action
@@ -13,42 +14,50 @@ import { getTypeByKey } from '../api/types';
  * @returns {object}
  */
 export const create = async (resource: Resource) => {
-  
   const updateActions: Array<UpdateAction> = [];
-  const { customerBlockTypeKey} = readConfiguration();
+  const { customerBlockTypeKey } = readConfiguration();
 
   try {
-
     const order = JSON.parse(JSON.stringify(resource));
-    const customerId = order.obj.customerId
+    const customerId = order.obj.customerId;
     if (customerId) {
-        const customer = await getCustomerById(customerId);
-        let canPlaceOrders = false;
-    
-        const type = await getTypeByKey(customerBlockTypeKey);
-        if (type.fieldDefinitions.find(fd => fd.type.name == "Boolean")){
-          const fieldName: string = type.fieldDefinitions.find(fd => fd.type.name == "Boolean")?.name ?? "";
-          canPlaceOrders = customer?.custom?.fields?.[fieldName as keyof typeof customer.custom.fields];
-        }
+      const customer = await getCustomerById(customerId);
+      let canPlaceOrders = false;
 
-        switch (canPlaceOrders) {
-          case undefined:
-          case true:
-            console.log("Can place order or custom field not defined");
-            return { statusCode: 200, actions: updateActions };
-    
-          case false:
-            console.log("Customer can not place orders");
-            updateActions.push({
-              action: "Customer has been blocked from placing orders"
-            });
-            return { statusCode: 400, actions: updateActions };
-        }
-        }
+      const type = await getTypeByKey(customerBlockTypeKey);
+      if (type.fieldDefinitions.find((fd) => fd.type.name == 'Boolean')) {
+        const fieldName: string =
+          type.fieldDefinitions.find((fd) => fd.type.name == 'Boolean')?.name ??
+          '';
+        canPlaceOrders =
+          customer?.custom?.fields?.[
+            fieldName as keyof typeof customer.custom.fields
+          ];
+      }
+
+      switch (canPlaceOrders) {
+        case undefined:
+        case true:
+          console.log('Can place order or custom field not defined');
+          return { statusCode: 200, actions: updateActions };
+
+        case false:
+          console.log('Customer can not place orders');
+          updateActions.push({
+            action: 'Customer has been blocked from placing orders',
+          });
+          return { statusCode: 400, actions: updateActions };
+      }
     }
-    catch (error) {
+  } catch (error) {
     // Retry or handle the error
     // Create an error object
+    if (isHttpError(error) && error.status === 404) {
+      console.log(
+        'Customer or Type does not exist. (Anonymous) customer can place order.'
+      );
+      return { statusCode: 200, actions: updateActions };
+    }
     if (error instanceof Error) {
       throw new CustomError(
         400,
@@ -67,15 +76,15 @@ export const create = async (resource: Resource) => {
  */
 export const orderController = async (action: string, resource: Resource) => {
   switch (action) {
-    case 'Create': 
+    case 'Create':
       return create(resource);
-    case 'Update':{
+    case 'Update': {
       break;
     }
     default:
       throw new CustomError(
         500,
-        `Internal Server Error - Resource not recognized. Allowed values are 'Create' or 'Update'.`
+        `Internal Server Error - Action not recognized. Allowed values are 'Create' or 'Update'.`
       );
   }
 };

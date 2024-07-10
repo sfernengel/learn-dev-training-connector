@@ -9,13 +9,14 @@ import CustomError from '../errors/custom.error';
  * @param next
  * @returns
  */
-export const errorMiddleware = (
-  error: ErrorRequestHandler,
+export const errorMiddleware: ErrorRequestHandler = (
+  error: any,
   req: Request,
   res: Response,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   next: NextFunction
 ) => {
+  console.error('Middleware');
   if (error instanceof CustomError) {
     if (typeof error.statusCode === 'number') {
       res.status(error.statusCode).json({
