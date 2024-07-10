@@ -16,12 +16,12 @@ export const errorMiddleware: ErrorRequestHandler = (
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   next: NextFunction
 ) => {
-  console.error('Middleware');
   if (error instanceof CustomError) {
     if (typeof error.statusCode === 'number') {
       res.status(error.statusCode).json({
+        code: 'InvalidOperation',
         message: error.message,
-        errors: error.errors,
+        errors: [{ code: 'InvalidOperation', message: error.message }],
       });
 
       return;

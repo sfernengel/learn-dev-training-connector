@@ -1,4 +1,4 @@
-import { UpdateAction } from '@commercetools/sdk-client-v2';
+import { HttpErrorType, UpdateAction } from '@commercetools/sdk-client-v2';
 
 import CustomError from '../errors/custom.error';
 import { Resource } from '../interfaces/resource.interface';
@@ -43,13 +43,13 @@ export const create = async (resource: Resource) => {
 
         case false:
           console.log('Customer can not place orders');
-          updateActions.push({
-            action: 'Customer has been blocked from placing orders',
-          });
-          return { statusCode: 400, actions: updateActions };
+          throw new CustomError(
+            400,
+            `Customer has been blocked from placing orders`
+          );
       }
     }
-  } catch (error) {
+  } catch (error: any) {
     // Retry or handle the error
     // Create an error object
     if (isHttpError(error) && error.status === 404) {
@@ -57,8 +57,9 @@ export const create = async (resource: Resource) => {
         'Customer or Type does not exist. (Anonymous) customer can place order.'
       );
       return { statusCode: 200, actions: updateActions };
-    }
-    if (error instanceof Error) {
+    } else if (error instanceof CustomError) {
+      throw error;
+    } else if (error instanceof Error) {
       throw new CustomError(
         400,
         `Internal server error on OrderController: ${error.stack}`
