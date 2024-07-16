@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { apiSuccess } from '../api/success.api';
-import CustomError from '../errors/custom.error';
+import CustomError, { ErrorDetail } from '../errors/custom.error';
 import { orderController } from './order.controller';
 
 /**
@@ -17,7 +17,13 @@ export const post = async (request: Request, response: Response) => {
   const { action, resource } = request.body;
 
   if (!action || !resource) {
-    throw new CustomError(400, 'Bad request - Missing body parameters.');
+    const errorDetails: ErrorDetail[] = [
+      {
+        code: 'InvalidOperation',
+        message: `Bad request - Missing body parameters.`,
+      },
+    ];
+    throw new CustomError(400, errorDetails);
   }
 
   // Identify the type of resource in order to redirect
@@ -26,29 +32,41 @@ export const post = async (request: Request, response: Response) => {
     case 'order':
       try {
         const data = await orderController(action, resource);
-        if (data && data.statusCode === 200) {
-          apiSuccess(200, data.actions, response);
+        if (data && (data.statusCode === 200 || data.statusCode === 201)) {
+          apiSuccess(data.statusCode, data.actions, response);
           return;
         }
 
-        throw new CustomError(
-          data ? data.statusCode : 400,
-          JSON.stringify(data?.actions[0].action)
-        );
+        const errorDetails: ErrorDetail[] = [
+          {
+            code: 'InvalidOperation',
+            message: JSON.stringify(data),
+          },
+        ];
+        throw new CustomError(data ? data.statusCode : 400, errorDetails);
       } catch (error) {
         if (error instanceof CustomError) {
           throw error;
-        }
-        else if (error instanceof Error) {
-          throw new CustomError(500, error.message);
+        } else if (error instanceof Error) {
+          const errorDetails: ErrorDetail[] = [
+            {
+              code: 'InternalServerError',
+              message: error.message,
+            },
+          ];
+          throw new CustomError(500, errorDetails);
         }
       }
+
       break;
 
     default:
-      throw new CustomError(
-        500,
-        `Internal Server Error - Resource not recognized. Allowed values are 'cart', 'payments' or 'orders'.`
-      );
+      const errorDetails: ErrorDetail[] = [
+        {
+          code: 'InvalidOperation',
+          message: `Resource not recognized. Allowed values are 'order'.`,
+        },
+      ];
+      throw new CustomError(400, errorDetails);
   }
 };

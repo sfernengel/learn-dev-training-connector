@@ -10,7 +10,7 @@ import CustomError from '../errors/custom.error';
  * @returns
  */
 export const errorMiddleware: ErrorRequestHandler = (
-  error: any,
+  error: Error,
   req: Request,
   res: Response,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -19,14 +19,26 @@ export const errorMiddleware: ErrorRequestHandler = (
   if (error instanceof CustomError) {
     if (typeof error.statusCode === 'number') {
       res.status(error.statusCode).json({
-        code: 'InvalidOperation',
-        message: error.message,
-        errors: [{ code: 'InvalidOperation', message: error.message }],
+        errors: [
+          {
+            code: 'InvalidOperation',
+            message: error.message,
+            errors: error.errors,
+          },
+        ],
       });
 
       return;
     }
   }
 
-  res.status(500).send('Internal server error');
+  res.status(500).json({
+    errors: [
+      {
+        code: 'Internal server error',
+        message: error.message,
+        errors: [{ code: 'Internal server error', message: error.message }],
+      },
+    ],
+  });
 };

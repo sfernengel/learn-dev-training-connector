@@ -15,17 +15,18 @@ export const readConfiguration = () => {
     clientSecret: process.env.CTP_CLIENT_SECRET as string,
     projectKey: process.env.CTP_PROJECT_KEY as string,
     region: process.env.CTP_REGION as string,
-    customerBlockTypeKey:process.env.CUSTOM_TYPE_KEY as string,
+    customerBlockTypeKey: process.env.CUSTOM_TYPE_KEY as string,
   };
 
   const validationErrors = getValidateMessages(envValidators, envVars);
 
   if (validationErrors.length) {
-    throw new CustomError(
-      'InvalidEnvironmentVariablesError',
-      'Invalid Environment Variables please check your .env file',
-      validationErrors
-    );
+    throw new CustomError(400, [
+      {
+        code: 'InvalidEnvironmentVariablesError',
+        message: `Invalid Environment Variables please check your .env file ${validationErrors}`,
+      },
+    ]);
   }
 
   return envVars;

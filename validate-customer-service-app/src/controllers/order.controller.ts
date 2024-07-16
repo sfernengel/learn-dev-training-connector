@@ -1,11 +1,11 @@
-import { HttpErrorType, UpdateAction } from '@commercetools/sdk-client-v2';
+import { UpdateAction } from '@commercetools/sdk-client-v2';
 
-import CustomError from '../errors/custom.error';
+import CustomError, { ErrorDetail } from '../errors/custom.error';
 import { Resource } from '../interfaces/resource.interface';
 import { readConfiguration } from '../utils/config.utils';
 import { getCustomerById } from '../api/customers';
 import { getTypeByKey } from '../api/types';
-import { isHttpError } from '../types/index.types';
+import { logger } from '../utils/logger.utils';
 
 /**
  * Handle the update action
@@ -19,51 +19,60 @@ export const create = async (resource: Resource) => {
 
   try {
     const order = JSON.parse(JSON.stringify(resource));
-    const customerId = order.obj.customerId;
+    const customerId = order?.obj?.customerId;
     if (customerId) {
-      const customer = await getCustomerById(customerId);
-      let canPlaceOrders = false;
-
-      const type = await getTypeByKey(customerBlockTypeKey);
-      if (type.fieldDefinitions.find((fd) => fd.type.name == 'Boolean')) {
-        const fieldName: string =
-          type.fieldDefinitions.find((fd) => fd.type.name == 'Boolean')?.name ??
-          '';
-        canPlaceOrders =
-          customer?.custom?.fields?.[
-            fieldName as keyof typeof customer.custom.fields
-          ];
+      const customer = await getCustomerById(customerId).catch(
+        (_) => undefined
+      );
+      if (!customer) {
+        return { statusCode: 201, actions: updateActions };
       }
 
+      let canPlaceOrders = undefined;
+      console.log({ DEBUG: canPlaceOrders });
+
+      const type = await getTypeByKey(customerBlockTypeKey).catch(
+        (_) => undefined
+      );
+      if (!type) {
+        return { statusCode: 201, actions: updateActions };
+      }
+
+      const fd = type.fieldDefinitions.find((fd) => fd.type.name == 'Boolean');
+      if (fd && fd.name) {
+        canPlaceOrders = customer?.custom?.fields?.[fd.name];
+      }
+      console.log({ DEBUG: canPlaceOrders });
       switch (canPlaceOrders) {
         case undefined:
         case true:
-          console.log('Can place order or custom field not defined');
-          return { statusCode: 200, actions: updateActions };
+          logger.info('Can place order or custom field not defined');
+          return { statusCode: 201, actions: updateActions };
 
         case false:
-          console.log('Customer can not place orders');
-          throw new CustomError(
-            400,
-            `Customer has been blocked from placing orders`
-          );
+          logger.info('Customer can not place orders');
+          const errorDetails: ErrorDetail[] = [
+            {
+              code: 'InvalidOperation',
+              message: `Customer has been blocked from placing orders`,
+            },
+          ];
+          throw new CustomError(400, errorDetails);
       }
     }
-  } catch (error: any) {
+  } catch (error) {
     // Retry or handle the error
     // Create an error object
-    if (isHttpError(error) && error.status === 404) {
-      console.log(
-        'Customer or Type does not exist. (Anonymous) customer can place order.'
-      );
-      return { statusCode: 200, actions: updateActions };
-    } else if (error instanceof CustomError) {
+    if (error instanceof CustomError) {
       throw error;
     } else if (error instanceof Error) {
-      throw new CustomError(
-        400,
-        `Internal server error on OrderController: ${error.stack}`
-      );
+      const errorDetails: ErrorDetail[] = [
+        {
+          code: 'InternalServerError',
+          message: `Internal server error on OrderController`,
+        },
+      ];
+      throw new CustomError(500, errorDetails);
     }
   }
 };
@@ -83,9 +92,12 @@ export const orderController = async (action: string, resource: Resource) => {
       break;
     }
     default:
-      throw new CustomError(
-        500,
-        `Internal Server Error - Action not recognized. Allowed values are 'Create' or 'Update'.`
-      );
+      const errorDetails: ErrorDetail[] = [
+        {
+          code: 'InvalidOperation',
+          message: `Action not recognized. Allowed values are 'Create' or 'Update'.`,
+        },
+      ];
+      throw new CustomError(500, errorDetails);
   }
 };

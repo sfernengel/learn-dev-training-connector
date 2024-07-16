@@ -5,13 +5,11 @@ import { post } from '../controllers/service.controller';
 const serviceRouter = Router();
 
 serviceRouter.post('/', async (req, res, next) => {
-  {
-    try {
-      await post(req, res);
-      logger.info('Order createngrok http extension executed', res.statusMessage);
-    } catch (error) {
-      next(error);
-    }
+  logger.info('Cart update extension executed');
+  try {
+    await post(req, res!);
+  } catch (error) {
+    next(error); // Pass the error to the error handling middleware
   }
 });
 
