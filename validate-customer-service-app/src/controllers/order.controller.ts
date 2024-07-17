@@ -29,7 +29,6 @@ export const create = async (resource: Resource) => {
       }
 
       let canPlaceOrders = undefined;
-      console.log({ DEBUG: canPlaceOrders });
 
       const type = await getTypeByKey(customerBlockTypeKey).catch(
         (_) => undefined
@@ -42,7 +41,6 @@ export const create = async (resource: Resource) => {
       if (fd && fd.name) {
         canPlaceOrders = customer?.custom?.fields?.[fd.name];
       }
-      console.log({ DEBUG: canPlaceOrders });
       switch (canPlaceOrders) {
         case undefined:
         case true:
