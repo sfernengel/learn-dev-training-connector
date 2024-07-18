@@ -25,7 +25,7 @@ import GenericHandler from '../handlers/generic.handler.js';
  */
 export const messageHandler = async (request: Request, response: Response) => {
   // Send ACCEPTED acknowledgement to Subscription
-  response.status(HTTP_STATUS_SUCCESS_ACCEPTED).send();
+  // response.status(HTTP_STATUS_SUCCESS_ACCEPTED).send();
 
   try {
     // Check request body
@@ -42,7 +42,7 @@ export const messageHandler = async (request: Request, response: Response) => {
     
   } catch (error) {
     if(error instanceof CustomError && error.statusCode === 200) {
-      response.status(200).send();
+      response.status(HTTP_STATUS_SUCCESS_ACCEPTED).send();
     } else {
       throw new CustomError(400, `Bad request: ${error}`);
     }
