@@ -39,6 +39,8 @@ export const messageHandler = async (request: Request, response: Response) => {
       const handler: any = handlerFactory.getHandler(HANDLER_TYPE_ORDER_CONFIRMATION);
       await handler.process(messageBody);
     } 
+
+    response.status(HTTP_STATUS_SUCCESS_ACCEPTED).send();
     
   } catch (error) {
     if(error instanceof CustomError && error.statusCode === 200) {
