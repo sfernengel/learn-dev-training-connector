@@ -1,4 +1,8 @@
 import { Request, Response } from 'express';
+import {
+  HTTP_STATUS_BAD_REQUEST,
+  HTTP_STATUS_SUCCESS_ACCEPTED,
+} from '../constants/http-status.constants.js';
 import CustomError from '../errors/custom.error.js';
 
 /**
@@ -10,19 +14,9 @@ import CustomError from '../errors/custom.error.js';
  * @returns
  */
 export const errorMiddleware = (error: Error, req: Request, res: Response, next: any) => {
-  console.log("error middleware activated");
-  if (error instanceof CustomError) {
-    if (typeof error.statusCode === 'number') {
-      res.status(error.statusCode).json({
-        message: error.message,
-        errors: error.errors,
-      });
-
-      return;
-    }
+  if(error instanceof CustomError && error.statusCode === HTTP_STATUS_SUCCESS_ACCEPTED) {
+    console.log(error.message);
+    return;
   }
-
-  
-
-  // res.status(500).send('Internal server error');
+  console.log(error);
 };

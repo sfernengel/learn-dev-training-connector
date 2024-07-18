@@ -5,11 +5,11 @@ const eventRouter = Router();
 
 eventRouter.post('/', async (req, res, next) => {
   console.log('A request has been received');
-  // try {
-  await messageHandler(req, res);
-  // } catch (error) {
-  //   next(error);
-  // }
+  try {
+    await messageHandler(req, res);
+  } catch (error) {
+    next(error);
+  }
 });
 
 export default eventRouter;

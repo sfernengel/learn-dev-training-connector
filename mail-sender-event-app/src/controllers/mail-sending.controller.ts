@@ -25,11 +25,11 @@ import GenericHandler from '../handlers/generic.handler.js';
  */
 export const messageHandler = async (request: Request, response: Response) => {
   // Send ACCEPTED acknowledgement to Subscription
-  // response.status(HTTP_STATUS_SUCCESS_ACCEPTED).send();
+  response.status(HTTP_STATUS_SUCCESS_ACCEPTED).send();
 
   try {
     // Check request body
-    // doValidation(request);
+    doValidation(request);
 
     const encodedMessageBody = request.body.message.data;
     const messageBody = decodeToJson(encodedMessageBody);
@@ -40,15 +40,11 @@ export const messageHandler = async (request: Request, response: Response) => {
       await handler.process(messageBody);
     } 
 
-    response.status(HTTP_STATUS_SUCCESS_ACCEPTED).send();
-    
   } catch (error) {
-    response.status(HTTP_STATUS_SUCCESS_ACCEPTED).send();
-
-    // if(error instanceof CustomError && error.statusCode === 200) {
-    //   response.status(HTTP_STATUS_SUCCESS_ACCEPTED).send();
-    // } else {
-    //   throw new CustomError(400, `Bad request: ${error}`);
-    // }
+    if (error instanceof CustomError) {
+      throw error;
+    } else {
+      throw new CustomError(500, `Internal Server Error: ${error}`);
+    }
   }
 };
