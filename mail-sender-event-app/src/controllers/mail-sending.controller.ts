@@ -29,7 +29,7 @@ export const messageHandler = async (request: Request, response: Response) => {
 
   try {
     // Check request body
-    doValidation(request);
+    // doValidation(request);
 
     const encodedMessageBody = request.body.message.data;
     const messageBody = decodeToJson(encodedMessageBody);
@@ -43,10 +43,12 @@ export const messageHandler = async (request: Request, response: Response) => {
     response.status(HTTP_STATUS_SUCCESS_ACCEPTED).send();
     
   } catch (error) {
-    if(error instanceof CustomError && error.statusCode === 200) {
-      response.status(HTTP_STATUS_SUCCESS_ACCEPTED).send();
-    } else {
-      throw new CustomError(400, `Bad request: ${error}`);
-    }
+    response.status(HTTP_STATUS_SUCCESS_ACCEPTED).send();
+
+    // if(error instanceof CustomError && error.statusCode === 200) {
+    //   response.status(HTTP_STATUS_SUCCESS_ACCEPTED).send();
+    // } else {
+    //   throw new CustomError(400, `Bad request: ${error}`);
+    // }
   }
 };

@@ -67,7 +67,7 @@ class OrderConfirmationHandler extends GenericHandler {
         templateId,
         subject: "Order Received - " + orderDetails.orderNumber,
         dynamicTemplateData: orderDetails
-    }).then(response => console.log(response)).catch(error => console.log(error));
+    }).then(response => console.log("SUCCESS", response)).catch(error => console.log("FAILURE", error));
       logger.info(
         `Confirmation email of customer registration has been sent to ${orderDetails.customerEmail}.`
       );
