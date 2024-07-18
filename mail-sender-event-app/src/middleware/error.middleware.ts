@@ -10,6 +10,7 @@ import CustomError from '../errors/custom.error.js';
  * @returns
  */
 export const errorMiddleware = (error: Error, req: Request, res: Response, next: any) => {
+  console.log("error middleware activated");
   if (error instanceof CustomError) {
     if (typeof error.statusCode === 'number') {
       res.status(error.statusCode).json({
@@ -21,5 +22,5 @@ export const errorMiddleware = (error: Error, req: Request, res: Response, next:
     }
   }
 
-  res.status(500).send('Internal server error');
+  // res.status(500).send('Internal server error');
 };
