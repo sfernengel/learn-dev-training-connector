@@ -27,20 +27,24 @@ export const messageHandler = async (request: Request, response: Response) => {
   // Send ACCEPTED acknowledgement to Subscription
   response.status(HTTP_STATUS_SUCCESS_ACCEPTED).send();
 
-  // try {
-  //   // Check request body
-  //   doValidation(request);
+  try {
+    // Check request body
+    doValidation(request);
 
-  //   const encodedMessageBody = request.body.message.data;
-  //   const messageBody = decodeToJson(encodedMessageBody);
-  //   const handlerFactory = new HandlerFactory();
-  //   // let handler: any;
-  //   if (isOrderConfirmationMessage(messageBody)) {
-  //     const handler: any = handlerFactory.getHandler(HANDLER_TYPE_ORDER_CONFIRMATION);
-  //     await handler.process(messageBody);
-  //   } 
+    const encodedMessageBody = request.body.message.data;
+    const messageBody = decodeToJson(encodedMessageBody);
+    const handlerFactory = new HandlerFactory();
+    // let handler: any;
+    if (isOrderConfirmationMessage(messageBody)) {
+      const handler: any = handlerFactory.getHandler(HANDLER_TYPE_ORDER_CONFIRMATION);
+      await handler.process(messageBody);
+    } 
     
-  // } catch (error) {
-  //   throw new CustomError(400, `Bad request: ${error}`);
-  // }
+  } catch (error) {
+    if(error instanceof CustomError && error.statusCode === 200) {
+      response.status(200).send();
+    } else {
+      throw new CustomError(400, `Bad request: ${error}`);
+    }
+  }
 };
